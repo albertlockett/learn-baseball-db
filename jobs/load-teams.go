@@ -54,7 +54,7 @@ var teams = []*esTeam{
 	&esTeam{League: "AL", Division: "east", City: "Toronto", Name: "Blue Jays", Code: "TOR"},
 
 	// AL Central
-	&esTeam{League: "AL", Division: "central", City: "Chicago", Name: "White Sox", Code: "CSW"},
+	&esTeam{League: "AL", Division: "central", City: "Chicago", Name: "White Sox", Code: "CWS"},
 	&esTeam{League: "AL", Division: "central", City: "Cleveland", Name: "Indians", Code: "CLE"},
 	&esTeam{League: "AL", Division: "central", City: "Detroit", Name: "Tigers", Code: "DET"},
 	&esTeam{League: "AL", Division: "central", City: "Kansas City", Name: "Royals", Code: "KC"},
@@ -64,7 +64,7 @@ var teams = []*esTeam{
 	&esTeam{League: "AL", Division: "west", City: "Houston", Name: "Astros", Code: "HOU"},
 	&esTeam{League: "AL", Division: "west", City: "Los Angeles", Name: "Angels", Code: "LAA"},
 	&esTeam{League: "AL", Division: "west", City: "Oakland", Name: "Athletics", Code: "OAK"},
-	&esTeam{League: "AL", Division: "west", City: "Seattle", Name: "Mariners", Code: "STL"},
+	&esTeam{League: "AL", Division: "west", City: "Seattle", Name: "Mariners", Code: "SEA"},
 	&esTeam{League: "AL", Division: "west", City: "Texas", Name: "Rangers", Code: "TEX"},
 
 	// NL East
@@ -72,7 +72,7 @@ var teams = []*esTeam{
 	&esTeam{League: "NL", Division: "east", City: "Miami", Name: "Marlins", Code: "MIA"},
 	&esTeam{League: "NL", Division: "east", City: "New York", Name: "Mets", Code: "NYM"},
 	&esTeam{League: "NL", Division: "east", City: "Philadelphia", Name: "Phillies", Code: "PHI"},
-	&esTeam{League: "NL", Division: "east", City: "Washington", Name: "Nationals", Code: "WAS"},
+	&esTeam{League: "NL", Division: "east", City: "Washington", Name: "Nationals", Code: "WSH"},
 
 	// NL Central
 	&esTeam{League: "NL", Division: "central", City: "Chicago", Name: "Cubs", Code: "CHC"},
@@ -113,7 +113,7 @@ func LoadTeams(client *elastic.Client) (bool, error) {
 		log.Println("teams index already exist")
 	}
 
-	for i := 1; i < len(teams); i++ {
+	for i := 0; i < len(teams); i++ {
 		row := teams[i]
 		_, err := client.Index().
 			Index(teamIndexName).
