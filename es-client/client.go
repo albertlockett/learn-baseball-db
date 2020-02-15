@@ -12,9 +12,9 @@ import (
 var ctx = context.Background()
 
 // CreateClient creates a new client
-func CreateClient() *elastic.Client {
+func CreateClient(host *string) *elastic.Client {
 	client, connError := elastic.NewClient(
-		elastic.SetURL("http://127.0.0.1:9200"),
+		elastic.SetURL(*host),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheckInterval(10*time.Second),
 		elastic.SetErrorLog(log.New(os.Stderr, "ELASTIC ", log.LstdFlags)),
@@ -25,7 +25,7 @@ func CreateClient() *elastic.Client {
 		panic(connError)
 	}
 
-	info, code, err := client.Ping("http://127.0.0.1:9200").Do(ctx)
+	info, code, err := client.Ping(*host).Do(ctx)
 	if err != nil {
 		panic(err)
 	}
