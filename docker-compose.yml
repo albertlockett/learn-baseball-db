@@ -1,0 +1,8 @@
+version: '3'
+services:
+  es:
+    image: "elasticsearch:7.6.0"
+    environment:
+    - "discovery.type=single-node"
+    ports:
+    - "9200:9200"
