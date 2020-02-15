@@ -12,7 +12,7 @@ import (
 	"github.com/olivere/elastic"
 )
 
-const indexName = "players"
+const playersIndexName = "players"
 
 const indexMapping = `
 {
@@ -78,7 +78,7 @@ func rowToPlayer(r row) esPlayer {
 func LoadPlayers(client *elastic.Client) (bool, error) {
 
 	// Use the IndexExists service to check if a specified index exists.
-	exists, err := client.IndexExists(indexName).Do(ctx)
+	exists, err := client.IndexExists(playersIndexName).Do(ctx)
 	if err != nil {
 		// Handle error
 		panic(err)
@@ -86,7 +86,7 @@ func LoadPlayers(client *elastic.Client) (bool, error) {
 
 	//if index does not exist, create a new one with the specified mapping
 	if !exists {
-		createIndex, err := client.CreateIndex(indexName).BodyString(indexMapping).Do(ctx)
+		createIndex, err := client.CreateIndex(playersIndexName).BodyString(indexMapping).Do(ctx)
 		if err != nil {
 			panic(err)
 		}
@@ -146,7 +146,7 @@ func LoadPlayers(client *elastic.Client) (bool, error) {
 				for i := 1; i < len(rows); i++ {
 					row := rows[i]
 					_, err := client.Index().
-						Index(indexName).
+						Index(playersIndexName).
 						Type("_doc").
 						Id(row.Name).
 						BodyJson(rowToPlayer(row)).

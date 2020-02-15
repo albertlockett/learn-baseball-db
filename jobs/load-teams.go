@@ -6,7 +6,7 @@ import (
 	"github.com/olivere/elastic"
 )
 
-const teamIndexName = "players"
+const teamIndexName = "teams"
 
 const teamIndexMapping = `
 {
@@ -116,7 +116,7 @@ func LoadTeams(client *elastic.Client) (bool, error) {
 	for i := 1; i < len(teams); i++ {
 		row := teams[i]
 		_, err := client.Index().
-			Index(indexName).
+			Index(teamIndexName).
 			Type("_doc").
 			Id(row.code).
 			BodyJson(row).
