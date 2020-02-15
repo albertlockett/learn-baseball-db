@@ -5138,6 +5138,20 @@ type result struct {
 	SPA searchPlayerAll `json:"search_player_all"`
 }
 
+type esPlayer struct {
+	Name     string `json:"name"`
+	Position string `json:"position"`
+	Team     string `json:"team"`
+}
+
+func rowToPlayer(r row) esPlayer {
+	ob2 := esPlayer{}
+	ob2.Name = r.Name
+	ob2.Position = r.Position
+	ob2.Team = r.Team
+	return ob2
+}
+
 // LoadPlayers list of Players into the database
 func LoadPlayers(client *elastic.Client) (bool, error) {
 
@@ -5169,12 +5183,23 @@ func LoadPlayers(client *elastic.Client) (bool, error) {
 	if err := json.Unmarshal([]byte(text), &info); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%+v\n", info)
 
 	rows := info.SPA.QR.Rows
 	for i := 1; i < len(rows); i += 4 {
 		row := rows[i]
-		fmt.Printf("%+v\n", row)
+		ob2 := rowToPlayer(row)
+		fmt.Printf("%v\n", row)
+		fmt.Printf("%v\n", ob2)
+
+		_, err := client.Index().
+			Index(indexName).
+			Type("_doc").
+			Id(ob2.Name).
+			BodyJson(ob2).
+			Do(ctx)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return true, nil
