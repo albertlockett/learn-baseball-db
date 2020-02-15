@@ -3,7 +3,7 @@ package jobs
 import (
 	"log"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 )
 
 const teamIndexName = "teams"
@@ -17,19 +17,19 @@ const teamIndexMapping = `
   "mappings": {
     "dynamic": false,
     "properties": {
-      "league": {
+      "League": {
         "type": "keyword"
       },
-      "division": {
+      "Division": {
         "type": "keyword"
       },
-      "city": {
+      "City": {
         "type": "keyword"
 			},
-			"name": {
+			"Name": {
         "type": "keyword"
 			},
-			"code": {
+			"Code": {
         "type": "keyword"
       }
     }
@@ -38,55 +38,55 @@ const teamIndexMapping = `
 `
 
 type esTeam struct {
-	league   string `json:"league"`
-	division string `json:"division"`
-	city     string `json:"city"`
-	name     string `json:"name"`
-	code     string `json:"code"`
+	League   string `json:"League"`
+	Division string `json:"Division"`
+	City     string `json:"City"`
+	Name     string `json:"Name"`
+	Code     string `json:"Code"`
 }
 
 var teams = []*esTeam{
 	// AL East
-	&esTeam{league: "AL", division: "east", city: "Baltimore", name: "Orioles", code: "BAL"},
-	&esTeam{league: "AL", division: "east", city: "Boston", name: "Red Sox", code: "BOS"},
-	&esTeam{league: "AL", division: "east", city: "New York", name: "Yankees", code: "NYY"},
-	&esTeam{league: "AL", division: "east", city: "Tampa Bay", name: "Rays", code: "TB"},
-	&esTeam{league: "AL", division: "east", city: "Toronto", name: "Blue Jays", code: "TOR"},
+	&esTeam{League: "AL", Division: "east", City: "Baltimore", Name: "Orioles", Code: "BAL"},
+	&esTeam{League: "AL", Division: "east", City: "Boston", Name: "Red Sox", Code: "BOS"},
+	&esTeam{League: "AL", Division: "east", City: "New York", Name: "Yankees", Code: "NYY"},
+	&esTeam{League: "AL", Division: "east", City: "Tampa Bay", Name: "Rays", Code: "TB"},
+	&esTeam{League: "AL", Division: "east", City: "Toronto", Name: "Blue Jays", Code: "TOR"},
 
 	// AL Central
-	&esTeam{league: "AL", division: "central", city: "Chicago", name: "White Sox", code: "CSW"},
-	&esTeam{league: "AL", division: "central", city: "Cleveland", name: "Indians", code: "CLE"},
-	&esTeam{league: "AL", division: "central", city: "Detroit", name: "Tigers", code: "DET"},
-	&esTeam{league: "AL", division: "central", city: "Kansas City", name: "Royals", code: "KC"},
-	&esTeam{league: "AL", division: "central", city: "Minnesota", name: "Twins", code: "MIN"},
+	&esTeam{League: "AL", Division: "central", City: "Chicago", Name: "White Sox", Code: "CSW"},
+	&esTeam{League: "AL", Division: "central", City: "Cleveland", Name: "Indians", Code: "CLE"},
+	&esTeam{League: "AL", Division: "central", City: "Detroit", Name: "Tigers", Code: "DET"},
+	&esTeam{League: "AL", Division: "central", City: "Kansas City", Name: "Royals", Code: "KC"},
+	&esTeam{League: "AL", Division: "central", City: "Minnesota", Name: "Twins", Code: "MIN"},
 
 	// AL West
-	&esTeam{league: "AL", division: "west", city: "Houston", name: "Astros", code: "HOU"},
-	&esTeam{league: "AL", division: "west", city: "Los Angeles", name: "Angels", code: "LAA"},
-	&esTeam{league: "AL", division: "west", city: "Oakland", name: "Athletics", code: "OAK"},
-	&esTeam{league: "AL", division: "west", city: "Seattle", name: "Mariners", code: "STL"},
-	&esTeam{league: "AL", division: "west", city: "Texas", name: "Rangers", code: "TEX"},
+	&esTeam{League: "AL", Division: "west", City: "Houston", Name: "Astros", Code: "HOU"},
+	&esTeam{League: "AL", Division: "west", City: "Los Angeles", Name: "Angels", Code: "LAA"},
+	&esTeam{League: "AL", Division: "west", City: "Oakland", Name: "Athletics", Code: "OAK"},
+	&esTeam{League: "AL", Division: "west", City: "Seattle", Name: "Mariners", Code: "STL"},
+	&esTeam{League: "AL", Division: "west", City: "Texas", Name: "Rangers", Code: "TEX"},
 
 	// NL East
-	&esTeam{league: "NL", division: "east", city: "Atlanta", name: "Braves", code: "ATL"},
-	&esTeam{league: "NL", division: "east", city: "Miami", name: "Marlins", code: "MIA"},
-	&esTeam{league: "NL", division: "east", city: "New York", name: "Mets", code: "NYM"},
-	&esTeam{league: "NL", division: "east", city: "Philadelphia", name: "Phillies", code: "PHI"},
-	&esTeam{league: "NL", division: "east", city: "Washington", name: "Nationals", code: "WAS"},
+	&esTeam{League: "NL", Division: "east", City: "Atlanta", Name: "Braves", Code: "ATL"},
+	&esTeam{League: "NL", Division: "east", City: "Miami", Name: "Marlins", Code: "MIA"},
+	&esTeam{League: "NL", Division: "east", City: "New York", Name: "Mets", Code: "NYM"},
+	&esTeam{League: "NL", Division: "east", City: "Philadelphia", Name: "Phillies", Code: "PHI"},
+	&esTeam{League: "NL", Division: "east", City: "Washington", Name: "Nationals", Code: "WAS"},
 
 	// NL Central
-	&esTeam{league: "NL", division: "central", city: "Chicago", name: "Cubs", code: "CHC"},
-	&esTeam{league: "NL", division: "central", city: "Cincinati", name: "Reds", code: "CIN"},
-	&esTeam{league: "NL", division: "central", city: "Milwaukee", name: "Brewers", code: "MIL"},
-	&esTeam{league: "NL", division: "central", city: "Pittsburgh", name: "Pirates", code: "PIT"},
-	&esTeam{league: "NL", division: "central", city: "St. Lous", name: "Cardinals", code: "STL"},
+	&esTeam{League: "NL", Division: "central", City: "Chicago", Name: "Cubs", Code: "CHC"},
+	&esTeam{League: "NL", Division: "central", City: "Cincinati", Name: "Reds", Code: "CIN"},
+	&esTeam{League: "NL", Division: "central", City: "Milwaukee", Name: "Brewers", Code: "MIL"},
+	&esTeam{League: "NL", Division: "central", City: "Pittsburgh", Name: "Pirates", Code: "PIT"},
+	&esTeam{League: "NL", Division: "central", City: "St. Lous", Name: "Cardinals", Code: "STL"},
 
 	// NL West
-	&esTeam{league: "NL", division: "west", city: "Arizona", name: "Diamondbacks", code: "ARI"},
-	&esTeam{league: "NL", division: "west", city: "Colorado", name: "Rockies", code: "COL"},
-	&esTeam{league: "NL", division: "west", city: "Los Angeles", name: "Dodgers", code: "LAD"},
-	&esTeam{league: "NL", division: "west", city: "San Diego", name: "Padres", code: "SD"},
-	&esTeam{league: "NL", division: "west", city: "San Francisco", name: "Giants", code: "SF"},
+	&esTeam{League: "NL", Division: "west", City: "Arizona", Name: "Diamondbacks", Code: "ARI"},
+	&esTeam{League: "NL", Division: "west", City: "Colorado", Name: "Rockies", Code: "COL"},
+	&esTeam{League: "NL", Division: "west", City: "Los Angeles", Name: "Dodgers", Code: "LAD"},
+	&esTeam{League: "NL", Division: "west", City: "San Diego", Name: "Padres", Code: "SD"},
+	&esTeam{League: "NL", Division: "west", City: "San Francisco", Name: "Giants", Code: "SF"},
 }
 
 // LoadTeams load all the teams
@@ -118,7 +118,7 @@ func LoadTeams(client *elastic.Client) (bool, error) {
 		_, err := client.Index().
 			Index(teamIndexName).
 			Type("_doc").
-			Id(row.code).
+			Id(row.Code).
 			BodyJson(row).
 			Do(ctx)
 		if err != nil {

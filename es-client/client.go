@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 )
 
 var ctx = context.Background()

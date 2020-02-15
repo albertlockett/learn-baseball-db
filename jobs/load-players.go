@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 )
 
 const playersIndexName = "players"
