@@ -1,12 +1,15 @@
 package jobs
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/olivere/elastic/v7"
@@ -31,7 +34,10 @@ const indexMapping = `
       },
       "position": {
         "type": "keyword"
-      }
+			},
+			"fantasyRank": {
+				"type": "integer"
+			}
     }
   }
 }
@@ -61,9 +67,10 @@ type result struct {
 }
 
 type esPlayer struct {
-	Name     string `json:"name"`
-	Position string `json:"position"`
-	Team     string `json:"team"`
+	Name        string `json:"name"`
+	Position    string `json:"position"`
+	Team        string `json:"team"`
+	FantasyRank string `json:"fantasyRank"`
 }
 
 func rowToPlayer(r row) esPlayer {
@@ -99,17 +106,25 @@ func LoadPlayers(client *elastic.Client) (bool, error) {
 		log.Println("players index already exist")
 	}
 
-	// TODO make request to mlb.com
+	file, err := os.Open("./data/fantasy_rankings.csv")
+	if err != nil {
+		panic(err)
+	}
+
+	fantasyRanks := make(map[string]string)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		segments := strings.Split(line, ",")
+		rank := segments[0]
+		playerName := segments[1]
+		fantasyRanks[playerName] = rank
+	}
 
 	alphabet := "abcdefghijklmnopqrstuvwxyz"
 	for _, char1 := range alphabet {
 		for _, char2 := range alphabet {
 
-			// fmt.Println("http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&active_sw=%27Y%27&name_part=%27ca%25%27")
-			// fmt.Println(char1 + char2)
-			// fmt.Println("http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&active_sw=%27Y%27&name_part=%27" + string(char1) + string(char2) + "%25%27")
-
-			// url := "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&active_sw=%27Y%27&name_part=%27ca%25%27"
 			url := "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code=%27mlb%27&active_sw=%27Y%27&name_part=%27" + string(char1) + string(char2) + "%25%27"
 			httpClient := http.Client{
 				Timeout: time.Second * 10, // Maximum of 2 secs
@@ -145,11 +160,17 @@ func LoadPlayers(client *elastic.Client) (bool, error) {
 				rows := info.SPA.QR.Rows
 				for i := 1; i < len(rows); i++ {
 					row := rows[i]
+					esPlayer := rowToPlayer(row)
+					frank, frpresent := fantasyRanks[esPlayer.Name]
+					if frpresent {
+						esPlayer.FantasyRank = frank
+					}
+
 					_, err := client.Index().
 						Index(playersIndexName).
 						Type("_doc").
 						Id(row.Name).
-						BodyJson(rowToPlayer(row)).
+						BodyJson(esPlayer).
 						Do(ctx)
 					if err != nil {
 						log.Println("An error happened here")
