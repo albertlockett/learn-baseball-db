@@ -37,6 +37,30 @@ const indexMapping = `
 			},
 			"fantasyRank": {
 				"type": "integer"
+			},
+			"bats": {
+				"type": "keyword"
+			},
+			"throws": {
+				"type": "keyword"
+			},
+			"debut": {
+				"type": "date"
+			},
+			"born": {
+				"type": "date"
+			},
+			"birthCity": {
+				"type": "keyword"
+			},
+			"birthState": {
+				"type": "keyword"
+			},
+			"birthCountry": {
+				"type": "keyword"
+			},
+			"playerId": {
+				"type": "keyword"
 			}
     }
   }
@@ -46,9 +70,17 @@ const indexMapping = `
 var ctx = context.Background()
 
 type row struct {
-	Position string `json:"position"`
-	Name     string `json:"name_display_first_last"`
-	Team     string `json:"team_abbrev"`
+	Position     string `json:"position"`
+	Name         string `json:"name_display_first_last"`
+	Team         string `json:"team_abbrev"`
+	Bats         string `json:"bats"`
+	Throws       string `json:"throws"`
+	Debut        string `json:"pro_debut_date"`
+	Born         string `json:"birth_date"`
+	BirthCity    string `json:"birth_city"`
+	BirthState   string `json:"birth_state"`
+	BirthCountry string `json:"birth_country"`
+	PlayerID     string `json:"player_id"`
 }
 
 type queryResults struct {
@@ -67,10 +99,18 @@ type result struct {
 }
 
 type esPlayer struct {
-	Name        string `json:"name"`
-	Position    string `json:"position"`
-	Team        string `json:"team"`
-	FantasyRank string `json:"fantasyRank"`
+	Name         string `json:"name"`
+	Position     string `json:"position"`
+	Team         string `json:"team"`
+	FantasyRank  string `json:"fantasyRank"`
+	Bats         string `json:"bats"`
+	Throws       string `json:"throws"`
+	Debut        string `json:"debut"`
+	Born         string `json:"born"`
+	BirthCity    string `json:"birthCity"`
+	BirthState   string `json:"birthState"`
+	BirthCountry string `json:"birthCountry"`
+	PlayerID     string `json:"playerId"`
 }
 
 func rowToPlayer(r row) esPlayer {
@@ -78,6 +118,17 @@ func rowToPlayer(r row) esPlayer {
 	ob2.Name = r.Name
 	ob2.Position = r.Position
 	ob2.Team = r.Team
+	ob2.Bats = r.Bats
+	ob2.Throws = r.Throws
+	ob2.Debut = r.Debut
+	ob2.Born = r.Born
+	ob2.BirthCity = r.BirthCity
+	ob2.BirthState = r.BirthState
+	ob2.BirthCountry = r.BirthCountry
+	ob2.PlayerID = r.PlayerID
+	if ob2.Debut == "" {
+		ob2.Debut = "1970-01-01T00:00:00"
+	}
 	return ob2
 }
 
